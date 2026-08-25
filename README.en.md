@@ -2,6 +2,7 @@
 
 [中文](README.md) | English
 
+*This is a Vibe Coding project. Using Deepseek V4 Pro, @Deepseek-Harness*
 A token visualizer plugin for the DeepSeek Harness web GUI: as tokens stream, small colored squares bubble up from the bottom-right corner, in order, 10/20 per row, each square representing 100/1000 tokens.
 
 | Color | Meaning |
