@@ -2,7 +2,7 @@
 
 中文 | [English](README.en.md)
 
-这是一个氛围编程（Vibe Coding）项目。使用 Deepseek V4 Pro 模型，@Deepseek-Harness。
+*这是一个氛围编程（Vibe Coding）项目。使用 Deepseek V4 Pro 模型，@Deepseek-Harness。*
 DeepSeek Harness web GUI 的 token 可视化插件：生成 token 时，右下角会冒出一个个彩色小方块，按顺序排列，每行 10/20 个，每个方块代表 100/1000 token。
 
 | 颜色 | 含义 |
