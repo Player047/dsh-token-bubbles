@@ -27,19 +27,45 @@ DeepSeek Harness web GUI 的 token 可视化插件：生成 token 时，右下�
 
 ## 安装
 
+### 方式一：从 GitHub 安装（推荐）
+
 ```powershell
-dsh plugin --profile web add D:\datapack\dsh-token-bubbles
+dsh plugin --profile web add github:Player047/dsh-token-bubbles
 ```
 
-该命令会在 web 配置目录里执行 pnpm 安装，并把 `dsh-token-bubbles` 自动追加进 `dsh.profile.bundles`（包的 `cordis.patch.yml` 会插入宿主行，宿主行是 no-op，仅用于让客户端 bundle 被 `/plugins/dsh-token-bubbles/client.js` 提供）。
+想锁版本可以带 tag（按仓库实际 tag 替换）：
 
-安装后**重启 web 配置**生效：
+```powershell
+dsh plugin --profile web add github:Player047/dsh-token-bubbles#v0.4.5
+```
+
+### 方式二：本地开发（link 安装）
+
+```powershell
+git clone https://github.com/Player047/dsh-token-bubbles.git
+dsh plugin --profile web add .\dsh-token-bubbles
+```
+
+两种方式都会在 web profile 目录里执行 pnpm 安装，并把 `dsh-token-bubbles` 自动追加进 `dsh.profile.bundles`（包的 `cordis.patch.yml` 会插入宿主行，宿主行是 no-op，仅用于让客户端 bundle 被 `/plugins/dsh-token-bubbles/client.js` 提供）。
+
+- **GitHub 安装** = 拷贝进 profile，改配置请改自己 profile 里的 `node_modules/dsh-token-bubbles/lib/client.js`，改完重启生效；
+- **link 安装** = 直接指向本地源码，改源码后重启即可生效，适合开发迭代。
+
+安装后**重启 web profile** 生效：
 
 ```powershell
 dsh web
 ```
 
-（旧进程退出后重新启动即可；会话有持久化，对话不会丢。）
+（旧进程退出后重新启动即可；会话有持久化，对话不会丢。还没有 web profile 的用户，`dsh plugin` 会自动初始化。）
+
+### 卸载
+
+```powershell
+dsh plugin --profile web remove dsh-token-bubbles
+```
+
+然后重启 `dsh web`。
 
 ## 配置
 
@@ -55,8 +81,8 @@ dsh web
 | `batchCap` | `100000` | 单次用量更新最多入队的方块数 |
 | `revealIntervalMs` | `1` | 显示节奏：每多少 ms 一个 tick |
 | `timeoutEnable` | `true` | 超时消失开关：开启后每个方块显示 `lifetimeMs` 后从最早的开始逐个消失 |
-| `lifetimeMs` | `60000` | 方块显示时长（ms），配合 `timeoutEnable` |
-| `expireIntervalMs` | `120` | 逐个消失的节奏：每多少 ms 让最老的 1 个过期方块离场 |
+| `lifetimeMs` | `20000` | 方块显示时长（ms），配合 `timeoutEnable` |
+| `expireIntervalMs` | `10` | 逐个消失的节奏：每多少 ms 让最老的 1 个过期方块离场 |
 | `adaptiveSpeed` | `true` | 自适应速度开关：积压越多每 tick 放出越多 |
 | `adaptiveStep` | `100` | 每积压多少方块，每 tick 多放 1 个 |
 | `adaptiveCap` | `50` | 每 tick 最多放出的方块数 |
