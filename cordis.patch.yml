@@ -1,0 +1,9 @@
+# dsh-token-bubbles bundle patch.
+# When this package is installed with `dsh plugin --profile web add ...`,
+# the profile auto-appends it to dsh.profile.bundles and applies this layer,
+# so the plugin mounts without any manual cordis.patch.yml editing.
+# The host row is a no-op; it exists so the row activates and
+# dsh-client-modules serves the client bundle at /plugins/dsh-token-bubbles/client.js.
+- insert:
+    - id: token-bubbles
+      name: dsh-token-bubbles

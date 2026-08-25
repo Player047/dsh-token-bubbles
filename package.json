@@ -1,0 +1,30 @@
+{
+  "name": "dsh-token-bubbles",
+  "version": "0.4.5",
+  "description": "Token visualizer for the DeepSeek Harness web GUI: colored squares bubble up from the bottom-right corner as tokens stream (orange = output, light blue = uncached input, dark blue = cache hits).",
+  "type": "module",
+  "main": "lib/index.js",
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./lib/client.js",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-runtime"
+      ]
+    },
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    }
+  },
+  "files": [
+    "lib",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "license": "MIT"
+}
