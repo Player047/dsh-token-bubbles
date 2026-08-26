@@ -6,7 +6,7 @@
 
 > A useful — or delightfully useless — plugin for DeepSeek Harness that visualizes your token usage as you go. It's just delightful watching colorful bubbles pop up while your agent is emptying your wallet, isn't it?
 
-A token visualizer plugin for the DeepSeek Harness web GUI: as tokens stream, small colored squares bubble up from the bottom-right corner, in order, 10/20 per row, each square representing 100/1000 tokens.
+A token visualizer plugin for the DeepSeek Harness web GUI: as tokens stream, small colored squares bubble up from the bottom-right corner, in order, 10/20 per row, with independent tokens-per-square divisors for the input side and the output side (tune each multiplier freely).
 
 | Color | Meaning |
 |---|---|
@@ -79,7 +79,8 @@ All configuration lives in the `CFG` constant at the top of the client bundle; e
 
 | Key | Current value | Description |
 |---|---|---|
-| `tokensPerSquare` | `1000` | Tokens per square (`100` / `1000`) |
+| `inputTokensPerSquare` | `1000` | Tokens per square for the input side (uncached input + cache hits) |
+| `outputTokensPerSquare` | `1000` | Tokens per square for the output side (text + reasoning); lower it (e.g. `100`) for denser output squares that balance the input side |
 | `columns` | `20` | Squares per row (`10` / `20`) |
 | `squareSize` / `gap` | `12` / `3` | Square size and gap (px) |
 | `maxSquares` | `1100` | On-screen square cap; the topmost row is evicted as a whole (with a leave animation) when exceeded |

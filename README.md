@@ -6,7 +6,7 @@
 
 > A useful — or delightfully useless — plugin for DeepSeek Harness that visualizes your token usage as you go. It's just delightful watching colorful bubbles pop up while your agent is emptying your wallet, isn't it?
 
-DeepSeek Harness web GUI 的 token 可视化插件：生成 token 时，右下角会冒出一个个彩色小方块，按顺序排列，每行 10/20 个，每个方块代表 100/1000 token。
+DeepSeek Harness web GUI 的 token 可视化插件：生成 token 时，右下角会冒出一个个彩色小方块，按顺序排列，每行 10/20 个，每个方块代表的 token 数可以分别设置（输入系 / 输出系各一个除数，自由调倍数）。
 
 | 颜色 | 含义 |
 |---|---|
@@ -79,7 +79,8 @@ dsh plugin --profile web remove dsh-token-bubbles
 
 | 键 | 当前值 | 说明 |
 |---|---|---|
-| `tokensPerSquare` | `1000` | 每个方块代表的 token 数（可选 `100` / `1000`） |
+| `inputTokensPerSquare` | `1000` | 输入系（未缓存输入 + 缓存命中）每个方块代表的 token 数 |
+| `outputTokensPerSquare` | `1000` | 输出系（正文 + 思考）每个方块代表的 token 数；调小（如 `100`）让输出方块更密，与输入量级平衡 |
 | `columns` | `20` | 每行方块数（可选 `10` / `20`） |
 | `squareSize` / `gap` | `12` / `3` | 方块边长与间距（px） |
 | `maxSquares` | `1100` | 屏幕上同时存在的方块数上限，超出时整行淘汰最顶上的一行（带离场动画，兜底） |
