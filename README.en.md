@@ -80,7 +80,7 @@ All configuration lives in the `CFG` constant at the top of the client bundle; e
 | Key | Current value | Description |
 |---|---|---|
 | `inputTokensPerSquare` | `1000` | Tokens per square for the input side (uncached input + cache hits) |
-| `outputTokensPerSquare` | `1000` | Tokens per square for the output side (text + reasoning); lower it (e.g. `100`) for denser output squares that balance the input side |
+| `outputTokensPerSquare` | `10` | Tokens per square for the output side (text + reasoning); lower it (e.g. `100`) for denser output squares that balance the input side |
 | `columns` | `20` | Squares per row (`10` / `20`) |
 | `squareSize` / `gap` | `12` / `3` | Square size and gap (px) |
 | `maxSquares` | `1100` | On-screen square cap; the topmost row is evicted as a whole (with a leave animation) when exceeded |

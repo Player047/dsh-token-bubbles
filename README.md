@@ -80,7 +80,7 @@ dsh plugin --profile web remove dsh-token-bubbles
 | 键 | 当前值 | 说明 |
 |---|---|---|
 | `inputTokensPerSquare` | `1000` | 输入系（未缓存输入 + 缓存命中）每个方块代表的 token 数 |
-| `outputTokensPerSquare` | `1000` | 输出系（正文 + 思考）每个方块代表的 token 数；调小（如 `100`）让输出方块更密，与输入量级平衡 |
+| `outputTokensPerSquare` | `10` | 输出系（正文 + 思考）每个方块代表的 token 数；调小（如 `100`）让输出方块更密，与输入量级平衡 |
 | `columns` | `20` | 每行方块数（可选 `10` / `20`） |
 | `squareSize` / `gap` | `12` / `3` | 方块边长与间距（px） |
 | `maxSquares` | `1100` | 屏幕上同时存在的方块数上限，超出时整行淘汰最顶上的一行（带离场动画，兜底） |
