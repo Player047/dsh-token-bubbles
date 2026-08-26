@@ -4,6 +4,8 @@
 
 *这是一个氛围编程（Vibe Coding）项目。使用 Deepseek V4 Pro 模型，@Deepseek-Harness。*
 
+> A useful — or delightfully useless — plugin for DeepSeek Harness that visualizes your token usage as you go. It's just delightful watching colorful bubbles pop up while your agent is emptying your wallet, isn't it?
+
 DeepSeek Harness web GUI 的 token 可视化插件：生成 token 时，右下角会冒出一个个彩色小方块，按顺序排列，每行 10/20 个，每个方块代表 100/1000 token。
 
 | 颜色 | 含义 |
@@ -26,7 +28,7 @@ DeepSeek Harness web GUI 的 token 可视化插件：生成 token 时，右下�
 
 数据来源有两个：
 
-- **紫红（输出）/ 深紫（思考）**：实时估算——直接订阅当前会话快照的流式 `partial` 块（4 字符 ≈ 1 token），把 `text` 与 `reasoning` 两类块分开计数，模型一边写、方块就一边排队，不用等到模型调用结束的用量上报。
+- **紫红（输出）/ 深紫（思考）**：实时估算——直接订阅当前会话快照的流式 `partial` 块，按**语言自适应**折合（CJK ≈ 1.2 字符/token、其他 ≈ 4 字符/token，常数由真实会话的官方用量标定），把 `text` 与 `reasoning` 两类块分开计数，模型一边写、方块就一边排队；每次模型调用结束时，再用官方 `outputTokens` 对账（`calibrateWithUsage`），差额补发/回扣，把总数校准到官方真值。
 - **浅蓝（输入未命中）/ 深蓝（缓存命中）**：token-meter 的 `tokenUsage` 会话投影（`uncachedInputTokens` / `cacheReadTokens` / `cacheWriteTokens`），在每次模型调用上报用量时推送。
 
 ## 安装
@@ -90,14 +92,16 @@ dsh plugin --profile web remove dsh-token-bubbles
 | `adaptiveSpeed` | `true` | 自适应速度开关：积压越多每 tick 放出越多 |
 | `adaptiveStep` | `100` | 每积压多少方块，每 tick 多放 1 个 |
 | `adaptiveCap` | `50` | 每 tick 最多放出的方块数 |
-| `charsPerToken` | `4` | 流式文本估算：多少字符折合 1 token |
+| `cjkCharsPerToken` | `1.2` | 流式估算：CJK 字符每 token 字符数（官方用量标定） |
+| `otherCharsPerToken` | `4` | 流式估算：英文/数字/代码每 token 字符数（思考实测 ≈3.9） |
+| `calibrateWithUsage` | `true` | 官方校准开关：每次调用结束用官方 `outputTokens` 对账补差 |
 | `corner` | `{right:16, bottom:16}` | 右下角留白 |
 
 ## 工作原理
 
 - 宿主侧：包被挂载为 composition 里的一行（no-op 插件），`dsh-client-modules` 据此把 `lib/client.js` 以 `/plugins/dsh-token-bubbles/client.js?rev=…` 注入启动清单。
 - 客户端侧：bundle 通过 `window.__ModuleLoader__` 注册为 Cordis 客户端插件（`inject: ["slots", "sessions", "timer"]`），把可视化组件注册进 `shell.overlay`（框架级浮层，点击穿透）。
-- 组件订阅 `sessions.currentProvideInfo` 拿到当前会话；`tokenUsage` 投影的可观察面产生蓝色方块（输入/缓存增量），会话快照的流式 `partial` 产生深紫（思考）与紫红（输出）方块（文本按 `charsPerToken` 折合，边写边排队）。所有方块都进入同一条 FIFO 队列，由 `timer` 服务按 `revealIntervalMs` 逐个放出，因此所有颜色都从右下角向上生长；超出行数上限时最顶上一行播放离场动画后移除，会话切换时清屏并重新建立基线。
+- 组件订阅 `sessions.currentProvideInfo` 拿到当前会话；`tokenUsage` 投影的可观察面产生蓝色方块（输入/缓存增量），会话快照的流式 `partial` 产生深紫（思考）与紫红（输出）方块（按 CJK/其他 语言自适应折合估算 token，边写边排队，调用结束时用官方用量校准）。所有方块都进入同一条 FIFO 队列，由 `timer` 服务按 `revealIntervalMs` 逐个放出，因此所有颜色都从右下角向上生长；超出行数上限时最顶上一行播放离场动画后移除，会话切换时清屏并重新建立基线。
 
 ## License
 

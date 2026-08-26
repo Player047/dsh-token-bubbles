@@ -4,6 +4,8 @@
 
 *This is a Vibe Coding project. Using Deepseek V4 Pro, @Deepseek-Harness*
 
+> A useful — or delightfully useless — plugin for DeepSeek Harness that visualizes your token usage as you go. It's just delightful watching colorful bubbles pop up while your agent is emptying your wallet, isn't it?
+
 A token visualizer plugin for the DeepSeek Harness web GUI: as tokens stream, small colored squares bubble up from the bottom-right corner, in order, 10/20 per row, each square representing 100/1000 tokens.
 
 | Color | Meaning |
@@ -26,7 +28,7 @@ When the on-screen count exceeds `maxSquares`, the topmost row is still evicted 
 
 There are two data sources:
 
-- **Magenta (output) / dark purple (reasoning)**: estimated live — the plugin subscribes to the streaming `partial` blocks of the current session snapshot (4 characters ≈ 1 token), counting `text` and `reasoning` blocks separately, so squares queue up while the model is still writing, without waiting for end-of-call usage reporting.
+- **Magenta (output) / dark purple (reasoning)**: estimated live — the plugin subscribes to the streaming `partial` blocks of the current session snapshot and folds them with a **language-adaptive heuristic** (CJK ≈ 1.2 chars/token, other ≈ 4 chars/token — constants calibrated against real provider usage), counting `text` and `reasoning` blocks separately, so squares queue up while the model is still writing. When each model call finishes, the estimate is **reconciled against the official `outputTokens`** (`calibrateWithUsage`): the difference is topped up or clawed back so the totals match the official count.
 - **Light blue (cache miss) / dark blue (cache hit)**: the token-meter's `tokenUsage` session projection (`uncachedInputTokens` / `cacheReadTokens` / `cacheWriteTokens`), pushed whenever each model call reports usage.
 
 ## Installation
@@ -90,14 +92,16 @@ All configuration lives in the `CFG` constant at the top of the client bundle; e
 | `adaptiveSpeed` | `true` | Adaptive speed switch: more backlog → more squares per tick |
 | `adaptiveStep` | `100` | Backlog needed for one extra square per tick |
 | `adaptiveCap` | `50` | Max squares released per tick |
-| `charsPerToken` | `4` | Streaming-text heuristic: characters per estimated token |
+| `cjkCharsPerToken` | `1.2` | Streaming heuristic: CJK characters per estimated token (calibrated against official usage) |
+| `otherCharsPerToken` | `4` | Streaming heuristic: English/numbers/code characters per estimated token (reasoning measured ≈3.9) |
+| `calibrateWithUsage` | `true` | Official calibration switch: reconcile against official `outputTokens` at the end of each call |
 | `corner` | `{right:16, bottom:16}` | Bottom-right corner margin |
 
 ## How it works
 
 - Host side: the package mounts as one row in the composition (a no-op plugin), which is what makes `dsh-client-modules` inject `lib/client.js` into the boot manifest at `/plugins/dsh-token-bubbles/client.js?rev=…`.
 - Client side: the bundle registers as a Cordis client plugin (`inject: ["slots", "sessions", "timer"]`) via `window.__ModuleLoader__` and mounts its component into `shell.overlay` (the frame-wide click-through layer).
-- The component subscribes to `sessions.currentProvideInfo` for the current session; the `tokenUsage` projection face produces the blue squares (input/cache deltas), and the streaming `partial` of the session snapshot produces the dark-purple (reasoning) and magenta (output) squares (text folded at `charsPerToken`, queued while streaming). All squares flow through one FIFO queue released by the `timer` service at `revealIntervalMs`, so every color grows bottom-up; when the row cap is exceeded the topmost row leaves with an animation, and a session switch clears the screen and re-baselines.
+- The component subscribes to `sessions.currentProvideInfo` for the current session; the `tokenUsage` projection face produces the blue squares (input/cache deltas), and the streaming `partial` of the session snapshot produces the dark-purple (reasoning) and magenta (output) squares (language-adaptive token estimation, queued while streaming and reconciled against official usage at the end of each call). All squares flow through one FIFO queue released by the `timer` service at `revealIntervalMs`, so every color grows bottom-up; when the row cap is exceeded the topmost row leaves with an animation, and a session switch clears the screen and re-baselines.
 
 ## License
 
